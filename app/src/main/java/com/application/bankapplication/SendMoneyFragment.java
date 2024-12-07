@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.application.bankapplication.databinding.FragmentSendMoneyBinding;
 import com.application.bankapplication.httpservice.HTTPService;
@@ -137,6 +138,14 @@ public class SendMoneyFragment extends Fragment {
             JSONObject response = httpService.sendMoney(transaction);
 
             try {
+                String transactionId = response.getString("id");
+
+                Bundle bundle = new Bundle();
+                bundle.putString("transactionId",transactionId);
+                bundle.putString("senderId", senderId);
+                // Redirect to confirmation page
+                NavHostFragment.findNavController(SendMoneyFragment.this)
+                        .navigate(R.id.action_send_money_fragment_to_confirm_transaction_fragment, bundle);
 
             }
             catch (Exception e){

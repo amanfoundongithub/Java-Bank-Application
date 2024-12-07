@@ -42,7 +42,7 @@
     <fragment
         android:id="@+id/transactionFragment"
         android:label="TransactionFragment"
-        android:name="com.application.bankapplication.transaction.TransactionFragment">
+        android:name="com.application.bankapplication.transactionHistory.TransactionFragment">
 
         <action
             android:id="@+id/action_transactionFragment_to_homeFragment"
@@ -70,6 +70,21 @@
 
         <action
             android:id="@+id/action_send_money_fragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_send_money_fragment_to_confirm_transaction_fragment"
+            app:destination="@id/confirm_transaction_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/confirm_transaction_fragment"
+        android:name="com.application.bankapplication.ConfirmTransactionFragment"
+        android:label="ConfirmTransactionFragment">
+        <action
+            android:id="@+id/action_confirm_transaction_fragment_to_transactionFragment"
+            app:destination="@id/transactionFragment" />
+        <action
+            android:id="@+id/action_confirm_transaction_fragment_to_homeFragment"
             app:destination="@id/homeFragment" />
     </fragment>
 </navigation>

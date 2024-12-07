@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class HTTPService implements HTTPServiceInterface {
 
     // Base URL for transaction
-    private static final String base_url = "https://1b29-106-208-145-171.ngrok-free.app";
+    private static final String base_url = "https://90ac-106-208-146-247.ngrok-free.app";
 
     // Callback to open connection
     private HttpURLConnection createConnection(
@@ -147,6 +147,18 @@ public class HTTPService implements HTTPServiceInterface {
 
         // Open connection
         HttpURLConnection httpURLConnection = createConnection(sendMoneyURL, "POST", requestBody);
+
+        // Decode connection
+        return decodeConnection(httpURLConnection);
+    }
+
+    @Override
+    public JSONObject confirmTransaction(String transactionId) {
+
+        final String transactionVerifyURL = base_url + "/transaction/verify?id=" + transactionId;
+
+        // Open connection
+        HttpURLConnection httpURLConnection = createConnection(transactionVerifyURL, "GET", null);
 
         // Decode connection
         return decodeConnection(httpURLConnection);

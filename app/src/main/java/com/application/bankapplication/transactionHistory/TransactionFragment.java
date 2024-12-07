@@ -1,4 +1,4 @@
-package com.application.bankapplication.transaction;
+package com.application.bankapplication.transactionHistory;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -22,4 +22,7 @@ public interface HTTPServiceInterface {
     // Send money
     JSONObject sendMoney(Transaction transaction);
 
+    // Confirm transaction
+    JSONObject confirmTransaction(String transactionId);
+
 }
