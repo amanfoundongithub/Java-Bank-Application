@@ -1,12 +1,12 @@
 package com.application.bankapplication.login;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
@@ -20,17 +20,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-
+/**
+ * Login Page Fragment
+ *
+ * @author amanfoundongithub
+ *
+ */
 public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
 
-
+    // Executes asynchronous updates
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    // HTTP Service handler
     private final HTTPService httpService = new HTTPService();
-
 
     @Override
     public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container,
@@ -40,17 +47,16 @@ public class LoginFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
     public void onViewCreated(@NotNull View view,
                               Bundle savedInstanceState) {
-
         super.onViewCreated(view, savedInstanceState);
 
-        // Login Button
+        // Bind the functionality of Login Button
         binding.loginButton.setOnClickListener(v -> logIn());
 
-        // Sign Up Button
-        binding.signupLink.setOnClickListener(v-> signUp());
-
+        // Bind the functionality of Sign Up Tab Opener
+        binding.signupLink.setOnClickListener(v-> navigateToRegister());
     }
 
     @Override
@@ -59,51 +65,33 @@ public class LoginFragment extends Fragment {
         binding = null;
     }
 
+    // Functions defined below
 
-
-    private boolean isValidEmail(@NonNull String email) {
-        // Regular expression for email validation
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" // local part
-                + "[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";  // domain part
-
-        // Compile the regex
-        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(emailRegex);
-        java.util.regex.Matcher matcher = pattern.matcher(email);
-
-        // Return whether the email matches the pattern
-        return matcher.matches();
-    }
-
-    private boolean isValidPassword(@NonNull String password) {
-        return password.length() >= 8;
-    }
-
-    public void signUp() {
+    public void navigateToRegister() {
         NavHostFragment.findNavController(LoginFragment.this)
                 .navigate(R.id.action_loginFragment_to_signUpFragment);
     }
+
     public void logIn() {
         // Disable the Button
-        binding.loginButton.setEnabled(false);
+        disableButtons();
 
-        // Email
-        String email = binding.email.getText().toString().trim();
-
-        // Password
+        // Fetch values
         String password = binding.password.getText().toString().trim();
+        String email = binding.email.getText().toString().trim();
 
         // If email is not valid, say it is not
         if(!isValidEmail(email)) {
             Toast.makeText(getActivity(), "Incorrect Email format, Try Again!", Toast.LENGTH_SHORT).show();
+            return;
         }
-
         // If password is not valid, say it is not
         if(!isValidPassword(password)) {
             Toast.makeText(getActivity(), "Invalid Password format, Try Again!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Check if credentials are valid
+        // Check if credentials are valid or not
         executorService.execute(()->{
             String id;
             try{
@@ -114,30 +102,85 @@ public class LoginFragment extends Fragment {
             }
 
             String finalId = id;
+
+            // Run on UI thread
             requireActivity().runOnUiThread(
                     ()->{
                         if("-2".equals(finalId)){
-                            Toast.makeText(getActivity(), "Could not validate due to Internal Server Error, Try Again!", Toast.LENGTH_SHORT)
-                                    .show();
-                            binding.loginButton.setEnabled(true);
+                            Toast.makeText(getActivity(),
+                                            "Could not validate due to Internal Server Error, Try Again!",
+                                            Toast.LENGTH_SHORT).show();
+                            enableButtons();
                             return;
                         }
                         else if("-1".equals(finalId)){
-                            Toast.makeText(getActivity(), "Invalid Credentials, Try Again!", Toast.LENGTH_SHORT).show();
-                            binding.loginButton.setEnabled(true);
+                            Toast.makeText(getActivity(),
+                                    "Invalid Credentials, Try Again!",
+                                    Toast.LENGTH_SHORT).show();
+                            enableButtons();
                             return;
                         }
 
-                        // Create a bundle to perform transaction
-                        Bundle bundle = new Bundle();
-                        bundle.putString("id", finalId);
+                        // On success, show loading screen
+                        showLoadingScreen();
 
-                        NavHostFragment.findNavController(LoginFragment.this).navigate(
-                                R.id.action_loginFragment_to_homeFragment, bundle
-                        );
+                        // Navigate To Home Screen
+                        Handler handler = new Handler();
+                        handler.postDelayed(()->navigateToHomePage(finalId), 3000);
                     }
             );
         });
-
     }
+
+    private boolean isValidEmail(@NonNull String email) {
+        // Regular expression for email validation
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" // local part
+                + "[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";  // domain part
+
+        // Compile the regex
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+
+        // Return whether the email matches the pattern
+        return matcher.matches();
+    }
+
+
+    private boolean isValidPassword(@NonNull String password) {
+        // Length of password only
+        return password.length() >= 8;
+    }
+
+    private void disableButtons(){
+        binding.loginButton.setEnabled(false);
+        binding.signupLink.setEnabled(false);
+    }
+
+    private void enableButtons(){
+        binding.loginButton.setEnabled(true);
+        binding.signupLink.setEnabled(true);
+    }
+
+    private void showLoadingScreen() {
+        binding.email.setEnabled(false);
+        binding.password.setEnabled(false);
+
+        binding.loginButton.setVisibility(View.GONE);
+        binding.signupLink.setVisibility(View.GONE);
+
+        binding.loadingSpinner.setVisibility(View.VISIBLE);
+        binding.labelSuccessLogin.setVisibility(View.VISIBLE);
+    }
+
+    private void navigateToHomePage(String finalId) {
+        // Bundle
+        Bundle bundle = new Bundle();
+        bundle.putString("id", finalId);
+
+        // Redirection
+        NavHostFragment.findNavController(LoginFragment.this).navigate(
+                R.id.action_loginFragment_to_homeFragment, bundle
+        );
+    }
+
 }

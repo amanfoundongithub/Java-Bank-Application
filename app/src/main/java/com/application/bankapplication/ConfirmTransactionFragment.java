@@ -69,7 +69,7 @@ public class ConfirmTransactionFragment extends Fragment {
             try {
                 JSONObject response = httpService.confirmTransaction(transactionId);
 
-                boolean signed = response.getBoolean("signed");
+                boolean signed = response.getBoolean("status");
                 String receiverId = response.getString("receiverId");
                 double amount = response.getDouble("amount");
 

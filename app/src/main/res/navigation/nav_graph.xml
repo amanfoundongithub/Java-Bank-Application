@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_homeFragment_to_send_money_fragment"
             app:destination="@id/send_money_fragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment

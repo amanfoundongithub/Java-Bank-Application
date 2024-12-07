@@ -1,16 +1,21 @@
 package com.application.bankapplication;
 
 
+
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.TooltipCompat;
-import androidx.core.text.HtmlCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.application.bankapplication.databinding.FragmentHomeBinding;
@@ -18,6 +23,7 @@ import com.application.bankapplication.httpservice.HTTPService;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +31,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-    private final HTTPService httpService = new HTTPService();
+
 
     // Email
     private String email;
@@ -51,17 +57,47 @@ public class HomeFragment extends Fragment {
     // Executor to execute the new thread
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
+    // HTTP Service
+    private final HTTPService httpService = new HTTPService();
+
+    // Navigator
+    private NavController navController;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view,
+                              Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        navController = NavHostFragment.findNavController(HomeFragment.this);
+        // Fetch ID
         if(getArguments() != null) {
-            email = getArguments().getString("email", "");
             id = getArguments().getString("id", "");
         }
 
-        return binding.getRoot();
+        // Initialize a modal viewer for the balance
+        binding.getBankStatement.setOnClickListener(v -> showBalanceModal());
+
+        // Initialize a method to view transactions
+        binding.getMyTransactions.setOnClickListener(v -> showTransactions());
+
+        // Initialize a functionality to allow user to send money
+        binding.sendMoney.setOnClickListener(v->sendMoney());
+
+        // Log Out Button Initialization
+        binding.logOut.setOnClickListener(v->logOut());
+
+        // Copies username to clipboard
+        binding.copyUsernameButton.setOnClickListener(v->copyToClipBoard());
+
+        // Fetch details from server
+        addUserDetails();
     }
 
     @Override
@@ -70,52 +106,41 @@ public class HomeFragment extends Fragment {
         binding = null;
     }
 
-    public void onViewCreated(@NonNull View view,
-                              Bundle savedInstanceState) {
-
-
-        super.onViewCreated(view, savedInstanceState);
-
-        // Fetch details from server
-        initPage();
-    }
-
-    private void showBalanceModal() {
-
-        // Content of the modal
+    public void showBalanceModal() {
         String modalContent = "Dear " + username + ", you have currently ₹" + account_balance + " left in"
                 + " your account.";
 
-        new AlertDialog.Builder(
-                requireContext()
-        )
+        new AlertDialog.Builder(requireContext())
                 .setTitle("Account Balance")
                 .setMessage(modalContent)
                 .setNegativeButton("OK",null)
                 .show();
     }
 
-    private void showTransactions() {
-
+    public void showTransactions() {
         Bundle bundle = new Bundle();
         bundle.putString("id",id);
-        NavHostFragment.findNavController(HomeFragment.this)
-                .navigate(R.id.action_homeFragment_to_transactionFragment,bundle);
+
+        navController.navigate(R.id.action_homeFragment_to_transactionFragment,bundle);
     }
 
-    private void sendMoney() {
+    public void sendMoney() {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
         bundle.putDouble("amount", account_balance);
         bundle.putString("phone", phone);
 
-        NavHostFragment.findNavController(HomeFragment.this)
-                .navigate(R.id.action_homeFragment_to_send_money_fragment, bundle);
+        navController.navigate(R.id.action_homeFragment_to_send_money_fragment, bundle);
     }
 
-    private void initPage() {
-        executorService.execute(() -> {
+    public void logOut(){
+        navController.navigate(R.id.action_homeFragment_to_loginFragment);
+    }
 
+
+
+    private void addUserDetails() {
+        executorService.execute(() -> {
             JSONObject response = httpService.getUserDetails(id);
 
             try{
@@ -136,12 +161,11 @@ public class HomeFragment extends Fragment {
             requireActivity().runOnUiThread(()->{
 
                 // Initialize the welcome Message
-                String welcomeMsg = "Welcome, " + username;
+                String welcomeMsg = getGreetings() + ", " + name;
                 binding.welcomeText.setText(welcomeMsg);
 
-                // Initialize the email
-                String emailMsg = "Email : <b>" + email + "</b>";
-                binding.userEmail.setText(HtmlCompat.fromHtml(emailMsg, HtmlCompat.FROM_HTML_MODE_LEGACY));
+                String usernameMsg = "Your username: " + username;
+                binding.userUsername.setText(usernameMsg);
 
                 // If pro user, display a badge
                 if(isProUser){
@@ -153,21 +177,45 @@ public class HomeFragment extends Fragment {
                     binding.proBadge.setVisibility(View.GONE);
                 }
 
-                // Initialize a modal viewer for the balance
-                binding.getBankStatement.setOnClickListener(v -> showBalanceModal());
-
-                // Initialize a method to view transactions
-                binding.getMyTransactions.setOnClickListener(v -> showTransactions());
-
-                // Initialize a functionality to allow user to send money
-                binding.sendMoney.setOnClickListener(v->sendMoney());
-
                 // Finally unlock all content
-                binding.homeLoadingSpinner.setVisibility(View.GONE);
-                binding.mainContentHome.setVisibility(View.VISIBLE);
-
+                unlockContent();
             });
 
         });
     }
+
+    @NonNull
+    private String getGreetings(){
+        int hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+
+        // Greetings
+        if(hour >= 5 && hour <= 12) {
+            return "Good Morning";
+        }
+        else if(hour >= 12 && hour <= 17){
+            return "Good Afternoon";
+        }
+        else if(hour >= 17 && hour <= 21){
+            return "Good Evening";
+        }
+        else{
+            return "Good Night";
+        }
+    }
+
+    private void unlockContent(){
+        binding.homeLoadingSpinner.setVisibility(View.GONE);
+        binding.mainContentHome.setVisibility(View.VISIBLE);
+
+        binding.logOut.setVisibility(View.VISIBLE);
+    }
+
+    private void copyToClipBoard(){
+        ClipboardManager clipboardManager = (ClipboardManager) requireContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText("username", username);
+        clipboardManager.setPrimaryClip(clipData);
+        Toast.makeText(requireContext(), "Username copied to clipboard", Toast.LENGTH_SHORT).show();
+    }
+
+
 }

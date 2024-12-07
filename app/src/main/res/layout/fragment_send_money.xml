@@ -67,5 +67,13 @@
             android:text="Send Money"
             android:layout_marginTop="20dp" />
 
+        <Button
+            android:id="@+id/btn_go_to_home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Go Back To Home"
+            android:backgroundTint="@color/common_google_signin_btn_text_light_focused"
+            android:layout_marginTop="20dp" />
+
     </LinearLayout>
 </ScrollView>

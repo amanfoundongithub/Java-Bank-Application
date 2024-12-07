@@ -1,40 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFEB3B">
 
-    <Button
-        android:id="@+id/start_here_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="149dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="149dp"
-        android:layout_marginBottom="358dp"
-        android:text="Click Here"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
+    <!-- Welcome Text -->
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="120dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="28dp"
-        android:fontFamily="sans-serif-black"
-        android:text="Welcome To XYZ Bank!"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@+id/start_here_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="100dp"
+        android:text="Welcome to BTC Bank!"
+        android:textColor="#004D40"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:fontFamily="sans-serif-medium"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Welcome To SBI Bank!" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Tagline -->
+    <TextView
+        android:id="@+id/tagline"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Your trusted partner in financial growth."
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:textStyle="italic"
+
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Action Button -->
+    <Button
+        android:id="@+id/start_here_button"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/rounded_button"
+        android:text="Get Started"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        app:layout_constraintTop_toBottomOf="@id/tagline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/loadingSpinnerWelcome"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/start_here_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/label_wait_welcome"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Please wait while we initiate the application."
+        android:textColor="#4CAF50"
+        android:textSize="18sp"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/loadingSpinnerWelcome"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

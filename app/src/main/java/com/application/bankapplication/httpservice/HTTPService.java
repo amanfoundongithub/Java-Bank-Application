@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class HTTPService implements HTTPServiceInterface {
 
     // Base URL for transaction
-    private static final String base_url = "https://90ac-106-208-146-247.ngrok-free.app";
+    private static final String base_url = "https://1a0d-106-208-146-247.ngrok-free.app";
 
     // Callback to open connection
     private HttpURLConnection createConnection(

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.application.bankapplication.R;
 import com.application.bankapplication.httpservice.HTTPService;
 import com.application.bankapplication.models.Transaction;
+import com.application.bankapplication.models.TransactionDetails;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
@@ -35,7 +36,7 @@ public class TransactionFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private List<Transaction> transactionList = new ArrayList<Transaction>();
+    private List<TransactionDetails> transactionList = new ArrayList<TransactionDetails>();
 
     @Override
     public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container,
@@ -85,14 +86,20 @@ public class TransactionFragment extends Fragment {
                 JSONArray trans = response.getJSONArray("transactions");
                 for (int i = 0 ; i < trans.length() ; i++){
                     JSONObject obj = trans.getJSONObject(i);
-                    transactionList.add(
-                            new Transaction(
-                                    obj.getString("id"),
-                                    obj.getString("id"),
-                                    obj.getString("description"),
-                                    obj.getDouble("amount")
-                            )
+                    // New object
+                    TransactionDetails transactionDetails = new TransactionDetails(
+                            obj.getString("senderId"),
+                            obj.getString("receiverId"),
+                            obj.getString("description"),
+                            obj.getDouble("amount")
                     );
+                    transactionDetails.addServerDetails(
+                            obj.getBoolean("status"),
+                            obj.getString("message"),
+                            obj.getString("transactionDate")
+                    );
+
+                    transactionList.add(transactionDetails);
                 }
             }
             catch (Exception e) {

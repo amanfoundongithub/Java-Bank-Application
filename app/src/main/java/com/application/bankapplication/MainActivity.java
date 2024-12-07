@@ -1,12 +1,11 @@
 package com.application.bankapplication;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.View;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -17,6 +16,7 @@ import com.application.bankapplication.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +31,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
+
+        binding.toolbar.setTitle("BTC Bank");
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
     }
 
     @Override

@@ -10,25 +10,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.application.bankapplication.R;
 import com.application.bankapplication.models.Transaction;
+import com.application.bankapplication.models.TransactionDetails;
 
 import java.util.List;
 
 public class TransactionAdapterRecycler extends RecyclerView.Adapter<TransactionAdapterRecycler.TransactionViewHolder>{
 
     // list
-    private List<Transaction> transactions;
+    private List<TransactionDetails> transactions;
 
-    public TransactionAdapterRecycler(List<Transaction> transactions){
+    public TransactionAdapterRecycler(List<TransactionDetails> transactions){
         this.transactions = transactions;
     }
 
     static class TransactionViewHolder extends RecyclerView.ViewHolder {
-        TextView description, amount;
+        TextView description, amount, receiverId, serverMessage;
 
         public TransactionViewHolder(@NonNull View itemView) {
             super(itemView);
             description = itemView.findViewById(R.id.transaction_description);
             amount = itemView.findViewById(R.id.transaction_amount);
+            receiverId = itemView.findViewById(R.id.transaction_receiver_id);
+            serverMessage = itemView.findViewById(R.id.transaction_message);
+
         }
     }
 
@@ -44,9 +48,13 @@ public class TransactionAdapterRecycler extends RecyclerView.Adapter<Transaction
 
     @Override
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
-        Transaction transaction = transactions.get(position);
+        TransactionDetails transaction = transactions.get(position);
         holder.description.setText(transaction.description);
-        holder.amount.setText("20093");
+        holder.amount.setText(Double.toString(transaction.amount));
+        holder.serverMessage.setText(transaction.message);
+        holder.receiverId.setText(transaction.receiverId);
+
+
     }
 
     @Override

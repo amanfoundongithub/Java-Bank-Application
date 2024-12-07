@@ -59,7 +59,18 @@ public class SendMoneyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.btnSendMoney.setOnClickListener(v->confirmSending());
+        binding.btnGoToHome.setOnClickListener(v->goToHome());
+
     }
+
+
+    private void goToHome() {
+        Bundle bundle = new Bundle();
+        bundle.putString("id", senderId);
+        NavHostFragment.findNavController(SendMoneyFragment.this)
+                .navigate(R.id.action_send_money_fragment_to_homeFragment, bundle);
+    }
+
 
     private void processTransaction(Transaction transaction) {
         // Instantiate
@@ -146,7 +157,6 @@ public class SendMoneyFragment extends Fragment {
                 // Redirect to confirmation page
                 NavHostFragment.findNavController(SendMoneyFragment.this)
                         .navigate(R.id.action_send_money_fragment_to_confirm_transaction_fragment, bundle);
-
             }
             catch (Exception e){
                 e.printStackTrace();

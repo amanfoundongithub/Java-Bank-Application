@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#03A9F4">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -36,7 +37,8 @@
                     android:id="@+id/title_login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Login To The System Below:"
+                    android:text="Login"
+                    android:textStyle="bold"
                     android:textSize="24sp"
                     android:textColor="@android:color/black"
                     android:layout_marginBottom="16dp"
@@ -96,7 +98,7 @@
                     android:id="@+id/signup_link"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Don't have an account? Sign Up"
+                    android:text="Don't have an account? Register Here"
                     android:textSize="16sp"
                     android:textColor="#0288D1"
                     android:layout_marginTop="16dp"
@@ -104,6 +106,27 @@
                     android:gravity="center"
                     android:clickable="true"
                     android:focusable="true"/>
+
+                <ProgressBar
+                    android:id="@+id/loading_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"
+                    android:indeterminate="true"
+                    android:layout_gravity="center" />
+
+                <TextView
+                    android:id="@+id/label_success_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Success! Redirecting To Home Page..."
+                    android:textSize="16sp"
+                    android:textColor="#32a852"
+                    android:layout_marginTop="16dp"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:visibility="gone"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

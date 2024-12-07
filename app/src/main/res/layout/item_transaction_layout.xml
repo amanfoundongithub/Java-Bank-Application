@@ -1,26 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
     android:padding="16dp"
-    >
+    android:background="@android:color/white"
+    android:elevation="4dp"
+    android:layout_margin="8dp">
+
+    <!-- Left Section: Receiver ID, Description, and Amount -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Receiver ID -->
         <TextView
+            android:id="@+id/transaction_receiver_id"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/transaction_description"
-            android:text="Description of Transaction"
-            android:textStyle="bold"
-            android:textSize="16dp"
-            ></TextView>
+            android:text="Receiver ID: "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/black"
+            android:paddingBottom="4dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/transaction_amount"
-        android:text="Amount of Transaction"
-        android:textSize="14dp"
-        ></TextView>
+        <!-- Transaction Description -->
+        <TextView
+            android:id="@+id/transaction_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description: "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/darker_gray"
+            android:paddingBottom="4dp" />
+
+        <!-- Transaction Amount -->
+        <TextView
+            android:id="@+id/transaction_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Amount: "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/holo_green_dark"
+            android:paddingBottom="4dp" />
     </LinearLayout>
+
+    <!-- Right Section: Status and Message -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="end|center_vertical"
+        android:paddingStart="16dp">
+
+        <!-- Transaction Status -->
+        <TextView
+            android:id="@+id/transaction_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: "
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@android:color/black"
+            android:paddingBottom="8dp" />
+
+        <!-- Transaction Message -->
+        <TextView
+            android:id="@+id/transaction_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Message: "
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:fontFamily="sans-serif"
+            android:textColor="@android:color/darker_gray" />
+    </LinearLayout>
+</LinearLayout>
