@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class HTTPService implements HTTPServiceInterface {
 
     // Base URL for transaction
-    private static final String base_url = "https://f4ca-106-208-155-120.ngrok-free.app";
+    private static final String base_url = "https://284a-106-208-155-120.ngrok-free.app";
 
     // Callback to open connection
     private HttpURLConnection createConnection(
@@ -137,9 +137,9 @@ public class HTTPService implements HTTPServiceInterface {
     }
 
     @Override
-    public JSONObject getAllTransactions(String id) {
+    public JSONObject getAllTransactions(String username) {
 
-        final String transactionDetailsURL = base_url + "/transaction/all?id=" + id;
+        final String transactionDetailsURL = base_url + "/transaction/all?username=" + username;
 
         // Open connection
         HttpURLConnection httpURLConnection = createConnection(transactionDetailsURL, "GET", null);

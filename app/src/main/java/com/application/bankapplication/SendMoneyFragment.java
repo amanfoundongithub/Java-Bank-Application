@@ -68,53 +68,53 @@ public class SendMoneyFragment extends Fragment {
 
         // Add method to confirm sending money
         binding.btnSendMoney.setOnClickListener(v->confirmSending());
-        disableButton();
+//        disableButton();
 
         // Add method to go back to home
         binding.btnGoToHome.setOnClickListener(v->goToHome());
 
         // Bind the receiver Id to the event change listener
-        binding.recieverId.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // Check if text is there
-                executorService.execute(()->{
-                    JSONObject response = httpService.checkIfUsernameExist(charSequence.toString());
-                            requireActivity().runOnUiThread(()->{
-                                try {
-                                    int statusCode = response.getInt("status");
-                                    if (statusCode == 200) {
-                                        boolean exists = response.getBoolean("exist");
-                                        if(exists){
-                                            enableButton();
-                                        }
-                                        else{
-                                            disableButton();
-                                        }
-                                    } else {
-                                        Toast.makeText(getContext(),
-                                                "Internal Server Error, Try Again Later",
-                                                Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            });
-                });
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+//        binding.recieverId.addTextChangedListener(new TextWatcher() {
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                // Check if text is there
+//                executorService.execute(()->{
+//                    JSONObject response = httpService.checkIfUsernameExist(charSequence.toString());
+//                            requireActivity().runOnUiThread(()->{
+//                                try {
+//                                    int statusCode = response.getInt("status");
+//                                    if (statusCode == 200) {
+//                                        boolean exists = response.getBoolean("exist");
+//                                        if(exists){
+//                                            enableButton();
+//                                        }
+//                                        else{
+//                                            disableButton();
+//                                        }
+//                                    } else {
+//                                        Toast.makeText(getContext(),
+//                                                "Internal Server Error, Try Again Later",
+//                                                Toast.LENGTH_SHORT).show();
+//                                    }
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
+//                            });
+//                });
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
 
     }
 
@@ -220,26 +220,29 @@ public class SendMoneyFragment extends Fragment {
                 if(statusCode == 200){
                     String transactionId = response.getString("id");
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("transactionId",transactionId);
-                    bundle.putString("senderId", senderId);
-                    bundle.putString("id",id);
+                    requireActivity().runOnUiThread(()->{
+                        Bundle bundle = new Bundle();
+                        bundle.putString("transactionId",transactionId);
+                        bundle.putString("senderId", senderId);
+                        bundle.putString("id",id);
 
-                    // Redirect to confirmation page
-                    NavHostFragment.findNavController(SendMoneyFragment.this)
-                            .navigate(R.id.action_send_money_fragment_to_confirm_transaction_fragment, bundle);
+                        // Redirect to confirmation page
+                        NavHostFragment.findNavController(SendMoneyFragment.this)
+                                .navigate(R.id.action_send_money_fragment_to_confirm_transaction_fragment, bundle);
+                    });
+
                 }
                 // Server error
                 else {
                     String serverMessage = "Server response:" + response.getString("message");
+                    binding.btnSendMoney.setEnabled(true);
+                    binding.btnGoToHome.setEnabled(true);
                     new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                             .setTitle("Error")
                             .setMessage(serverMessage)
                             .setNegativeButton("OK",(dialog, which)->{dialog.dismiss();})
                             .show();
                 }
-
-
             }
             catch (Exception e){
                 e.printStackTrace();

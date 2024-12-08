@@ -17,15 +17,37 @@
         android:orientation="vertical">
 
         <!-- Receiver ID -->
-        <TextView
-            android:id="@+id/transaction_receiver_id"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Receiver ID: "
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="@android:color/black"
-            android:paddingBottom="4dp" />
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/transaction_receiver_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Receiver ID: "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="@android:color/black"
+                android:paddingBottom="4dp" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_credit"
+                android:id="@+id/receive_amount"
+                android:visibility="gone"
+                />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_debit"
+                android:id="@+id/send_amount"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
 
         <!-- Transaction Description -->
         <TextView

@@ -34,6 +34,8 @@ public class TransactionFragment extends Fragment {
 
     private String id;
 
+    private String username;
+
     private RecyclerView recyclerView;
 
     private List<TransactionDetails> transactionList = new ArrayList<TransactionDetails>();
@@ -44,10 +46,9 @@ public class TransactionFragment extends Fragment {
 
         if(getArguments() != null) {
             id = getArguments().getString("id");
-
+            username = getArguments().getString("username");
         }
 
-        System.out.println(transactionList);
         //
         View view = inflater.inflate(R.layout.fragment_transaction, container, false);
         //
@@ -79,7 +80,7 @@ public class TransactionFragment extends Fragment {
 
     public void findAllTransactions(View view) {
         executorService.execute(()->{
-            JSONObject response = httpService.getAllTransactions(id);
+            JSONObject response = httpService.getAllTransactions(username);
 
             try {
                 // Get all transactions
@@ -94,8 +95,8 @@ public class TransactionFragment extends Fragment {
                             obj.getDouble("amount")
                     );
                     transactionDetails.addServerDetails(
-                            obj.getBoolean("status"),
-                            obj.getString("message"),
+                            obj.getBoolean("signed"),
+                            obj.getString("serverMessage"),
                             obj.getString("transactionDate")
                     );
 
@@ -109,7 +110,7 @@ public class TransactionFragment extends Fragment {
             requireActivity().runOnUiThread(()->{
                 recyclerView = view.findViewById(R.id.transactionrecyclerView);
                 recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                TransactionAdapterRecycler adapter = new TransactionAdapterRecycler(transactionList);
+                TransactionAdapterRecycler adapter = new TransactionAdapterRecycler(transactionList, username);
                 recyclerView.setAdapter(adapter);
             });
         });

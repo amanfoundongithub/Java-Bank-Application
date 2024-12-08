@@ -11,13 +11,13 @@ public interface HTTPServiceInterface {
     JSONObject getUserDetails(final String id);
 
     // Fetches all the transactions
-    JSONObject getAllTransactions(final String id);
+    JSONObject getAllTransactions(final String username);
 
     // Authenticate the user details
     JSONObject authenticateUser(String email, String password);
 
     // Authenticate the username
-    JSONObject checkIfUsernameExist(String username);
+    JSONObject checkIfUsernameExist(final String username);
 
     // Creates a user to the backend
     JSONObject createUser(User user);

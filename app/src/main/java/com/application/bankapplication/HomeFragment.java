@@ -118,6 +118,7 @@ public class HomeFragment extends Fragment {
     public void showTransactions() {
         Bundle bundle = new Bundle();
         bundle.putString("id",id);
+        bundle.putString("username", username);
 
         navController.navigate(R.id.action_homeFragment_to_transactionFragment,bundle);
     }
