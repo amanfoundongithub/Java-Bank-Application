@@ -16,6 +16,9 @@ public interface HTTPServiceInterface {
     // Authenticate the user details
     JSONObject authenticateUser(String email, String password);
 
+    // Authenticate the username
+    JSONObject checkIfUsernameExist(String username);
+
     // Creates a user to the backend
     JSONObject createUser(User user);
 

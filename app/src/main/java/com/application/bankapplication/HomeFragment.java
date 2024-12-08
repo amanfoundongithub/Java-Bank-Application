@@ -125,6 +125,7 @@ public class HomeFragment extends Fragment {
     public void sendMoney() {
         Bundle bundle = new Bundle();
         bundle.putString("id", id);
+        bundle.putString("username", username);
         bundle.putDouble("amount", account_balance);
         bundle.putString("phone", phone);
 

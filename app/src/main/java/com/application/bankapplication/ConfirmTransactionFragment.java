@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -22,6 +23,7 @@ public class ConfirmTransactionFragment extends Fragment {
 
     private String transactionId;
     private String senderId;
+    private String id;
 
     final private HTTPService httpService = new HTTPService();
     final private ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -36,6 +38,7 @@ public class ConfirmTransactionFragment extends Fragment {
         if(getArguments() != null){
             transactionId = getArguments().getString("transactionId");
             senderId = getArguments().getString("senderId");
+            id = getArguments().getString("id");
         }
         return binding.getRoot();
     }
@@ -56,11 +59,10 @@ public class ConfirmTransactionFragment extends Fragment {
 
     private void goToHome() {
         Bundle bundle = new Bundle();
-        bundle.putString("id", senderId);
+        bundle.putString("id", id);
         NavHostFragment.findNavController(ConfirmTransactionFragment.this)
                 .navigate(R.id.action_confirm_transaction_fragment_to_homeFragment, bundle);
     }
-
 
 
     // Code below
@@ -69,28 +71,48 @@ public class ConfirmTransactionFragment extends Fragment {
             try {
                 JSONObject response = httpService.confirmTransaction(transactionId);
 
-                boolean signed = response.getBoolean("status");
-                String receiverId = response.getString("receiverId");
-                double amount = response.getDouble("amount");
-
                 requireActivity().runOnUiThread(()->{
-                    // If verified by server
-                    binding.loadingSpinner.setVisibility(View.GONE);
-                    if(signed){
-                        binding.tickIcon.setVisibility(View.VISIBLE);
+                    try {
+                        int statusCode = response.getInt("status");
+                        if(statusCode == 200){
+                            boolean signed = response.getBoolean("signed");
+                            String receiverId = response.getString("receiverId");
+                            double amount = response.getDouble("amount");
 
-                        String message = "Successfully sent " + amount + " to " + receiverId;
-                        binding.statusText.setText(message);
+                            // If verified by server
+                            binding.loadingSpinner.setVisibility(View.GONE);
+                            if(signed){
+                                binding.tickIcon.setVisibility(View.VISIBLE);
+
+                                String message = "Successfully sent " + amount + " to " + receiverId;
+                                binding.statusText.setText(message);
+                            }
+                            else {
+                                binding.crossIcon.setVisibility(View.VISIBLE);
+
+                                String message = "Error in sending " + amount + " to " + receiverId;
+                                binding.statusText.setText(message);
+                            }
+
+                            binding.goBackButton.setVisibility(View.VISIBLE);
+                            binding.goBackButton.setOnClickListener(v->goToHome());
+                        }
+                        else {
+                            String serverMessage = "Server response:" + response.getString("message");
+                            new AlertDialog.Builder(requireContext())
+                                    .setTitle("Error")
+                                    .setMessage(serverMessage)
+                                    .setNegativeButton("OK",(dialog, which)->{
+                                        goToHome();
+                                    })
+                                    .show();
+                        }
+
+
+                    } catch (Exception e){
+                        e.printStackTrace();
                     }
-                    else {
-                        binding.crossIcon.setVisibility(View.VISIBLE);
 
-                        String message = "Error in sending " + amount + " to " + receiverId;
-                        binding.statusText.setText(message);
-                    }
-
-                    binding.goBackButton.setVisibility(View.VISIBLE);
-                    binding.goBackButton.setOnClickListener(v->goToHome());
                 });
 
             }

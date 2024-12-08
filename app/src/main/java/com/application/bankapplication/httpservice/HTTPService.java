@@ -114,6 +114,17 @@ public class HTTPService implements HTTPServiceInterface {
     }
 
     @Override
+    public JSONObject checkIfUsernameExist(String username) {
+        final String checkUsernameURL = base_url + "/user/username_in_db?username=" + username;
+
+        // Open connection
+        HttpURLConnection httpURLConnection = createConnection(checkUsernameURL, "GET", null);
+
+        // Decode connection
+        return decodeConnection(httpURLConnection);
+    }
+
+    @Override
     public JSONObject getUserDetails(String id) {
 
         final String userDetailsURL = base_url + "/user/details?id=" + id;
@@ -154,7 +165,7 @@ public class HTTPService implements HTTPServiceInterface {
     @Override
     public JSONObject confirmTransaction(String transactionId) {
 
-        final String transactionVerifyURL = base_url + "/transaction/verify?id=" + transactionId;
+        final String transactionVerifyURL = base_url + "/transaction/verify?transactionId=" + transactionId;
 
         // Open connection
         HttpURLConnection httpURLConnection = createConnection(transactionVerifyURL, "GET", null);
