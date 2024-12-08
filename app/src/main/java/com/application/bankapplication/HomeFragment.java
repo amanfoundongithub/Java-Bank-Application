@@ -31,8 +31,6 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
 
-
-
     // Email
     private String email;
 
@@ -144,42 +142,54 @@ public class HomeFragment extends Fragment {
             JSONObject response = httpService.getUserDetails(id);
 
             try{
-                // All variables are adjusted
-                JSONObject details = response.getJSONObject("details");
-                email = details.getString("email");
-                account_balance = details.getDouble("balance");
-                username = details.getString("username");
-                phone = details.getString("phone");
-                name = details.getString("name");
-                isProUser = details.getBoolean("premium");
+                int statusCode = response.getInt("status");
+                // Fetched successfully
+                if(statusCode == 200) {
+                    // All variables are adjusted
+                    JSONObject details = response.getJSONObject("details");
+                    email = details.getString("email");
+                    account_balance = details.getDouble("balance");
+                    username = details.getString("username");
+                    phone = details.getString("phone");
+                    name = details.getString("name");
+                    isProUser = details.getBoolean("premium");
+                    requireActivity().runOnUiThread(()->{
+
+                        // Initialize the welcome Message
+                        String welcomeMsg = getGreetings() + ", " + name;
+                        binding.welcomeText.setText(welcomeMsg);
+
+                        String usernameMsg = "Your username: " + username;
+                        binding.userUsername.setText(usernameMsg);
+
+                        // If pro user, display a badge
+                        if(isProUser){
+                            binding.proBadge.setVisibility(View.VISIBLE);
+                            TooltipCompat.setTooltipText(binding.proBadge, "The User has subscribed" +
+                                    " to premium use!");
+                        }
+                        else {
+                            binding.proBadge.setVisibility(View.GONE);
+                        }
+
+                        // Finally unlock all content
+                        unlockContent();
+                    });
+                }
+
+                else if(statusCode == 404 || statusCode == 500){
+                    String serverMessage = "Server response:" + response.getString("message");
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle("Error")
+                            .setMessage(serverMessage)
+                            .setNegativeButton("OK",(dialog, which)->{logOut();})
+                            .show();
+                }
+
             }
             catch (Exception e) {
                 e.printStackTrace();
             }
-
-
-            requireActivity().runOnUiThread(()->{
-
-                // Initialize the welcome Message
-                String welcomeMsg = getGreetings() + ", " + name;
-                binding.welcomeText.setText(welcomeMsg);
-
-                String usernameMsg = "Your username: " + username;
-                binding.userUsername.setText(usernameMsg);
-
-                // If pro user, display a badge
-                if(isProUser){
-                    binding.proBadge.setVisibility(View.VISIBLE);
-                    TooltipCompat.setTooltipText(binding.proBadge, "The User has subscribed" +
-                            " to premium use!");
-                }
-                else {
-                    binding.proBadge.setVisibility(View.GONE);
-                }
-
-                // Finally unlock all content
-                unlockContent();
-            });
 
         });
     }
