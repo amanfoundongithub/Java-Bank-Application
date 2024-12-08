@@ -17,7 +17,7 @@ import java.nio.charset.StandardCharsets;
 public class HTTPService implements HTTPServiceInterface {
 
     // Base URL for transaction
-    private static final String base_url = "https://1a0d-106-208-146-247.ngrok-free.app";
+    private static final String base_url = "https://f4ca-106-208-155-120.ngrok-free.app";
 
     // Callback to open connection
     private HttpURLConnection createConnection(
@@ -59,24 +59,23 @@ public class HTTPService implements HTTPServiceInterface {
             // Read the response
             int responseCode = httpURLConnection.getResponseCode();
 
-            // Successful response "OK"
-            if(responseCode == 200 || responseCode == 201) {
-                // Get the output
-                try(BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(httpURLConnection.getInputStream())
-                )){
-                    // Response Builder
-                    StringBuilder responseBuilder = new StringBuilder();
+            // Get the output
+            try(BufferedReader bufferedReader = new BufferedReader(
+                    new InputStreamReader(httpURLConnection.getInputStream())
+            )){
+                // Response Builder
+                StringBuilder responseBuilder = new StringBuilder();
 
-                    // Parse line by line
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null){
-                        responseBuilder.append(line);
-                    }
-
-                    // Parse it to a JSONObject
-                    return new JSONObject(responseBuilder.toString());
+                // Parse line by line
+                String line;
+                while ((line = bufferedReader.readLine()) != null){
+                    responseBuilder.append(line);
                 }
+
+                // Parse it to a JSONObject
+                JSONObject response = new JSONObject(responseBuilder.toString());
+                response.put("status",responseCode);
+                return response;
             }
         }
         catch (Exception e) {

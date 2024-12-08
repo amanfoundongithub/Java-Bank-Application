@@ -84,7 +84,7 @@ public class TransactionFragment extends Fragment {
             try {
                 // Get all transactions
                 JSONArray trans = response.getJSONArray("transactions");
-                for (int i = 0 ; i < trans.length() ; i++){
+                for (int i = trans.length() - 1 ; i >= 0 ; i--){
                     JSONObject obj = trans.getJSONObject(i);
                     // New object
                     TransactionDetails transactionDetails = new TransactionDetails(

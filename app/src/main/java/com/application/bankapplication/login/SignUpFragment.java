@@ -122,18 +122,32 @@ public class SignUpFragment extends Fragment {
 
         // Backend
         executorService.execute(()->{
+            // Get server response
+            JSONObject response = httpService.createUser(user);
+
             try {
-                JSONObject response = httpService.createUser(user);
-
-                // Redirection
-                String id = response.getString("id");
-
-                // Run on UI Thread
-                requireActivity().runOnUiThread(()-> {
-                    showLoadingScreen();
-                    Handler handler = new Handler();
-                    handler.postDelayed(()->navigateToHome(id), 3000);
-                });
+                int statusCode = response.getInt("status");
+                // Success Account Created
+                if(statusCode == 200) {
+                    String id = response.getString("id");
+                    // Run on UI Thread
+                    requireActivity().runOnUiThread(()-> {
+                        showLoadingScreen();
+                        Handler handler = new Handler();
+                        handler.postDelayed(()->navigateToHome(id), 3000);
+                    });
+                }
+                // Account creation or server issue
+                else if(statusCode == 201 || statusCode == 500){
+                    String serverMessage = response.getString("message");
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                Toast.makeText(getContext(), serverMessage, Toast.LENGTH_SHORT)
+                                        .show();
+                                enableButtons();
+                            }
+                    );
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();

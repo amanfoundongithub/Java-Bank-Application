@@ -17,6 +17,7 @@ import com.application.bankapplication.databinding.FragmentLoginBinding;
 import com.application.bankapplication.httpservice.HTTPService;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -93,42 +94,43 @@ public class LoginFragment extends Fragment {
 
         // Check if credentials are valid or not
         executorService.execute(()->{
-            String id;
-            try{
-                id = httpService.authenticateUser(email, password).getString("id");
+            // Http service execution
+            JSONObject response = httpService.authenticateUser(email, password);
+
+            // Now check the message from the server
+            try {
+                int statusCode = response.getInt("status");
+
+                // Authentication successful
+                if(statusCode == 200) {
+                    String id = response.getString("id");
+
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                // Show loading screen
+                                showLoadingScreen();
+
+                                // Navigate To Home Screen
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->navigateToHomePage(id), 3000);
+                            }
+                    );
+                }
+                else if(statusCode == 201 || statusCode == 500) {
+                    String serverMessage = response.getString("message");
+                    requireActivity().runOnUiThread(
+                            ()->{
+                                Toast.makeText(getContext(), serverMessage, Toast.LENGTH_SHORT)
+                                        .show();
+                                enableButtons();
+                            }
+                    );
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            catch (Exception e) {
-                id = "-2";
-            }
 
-            String finalId = id;
-
-            // Run on UI thread
-            requireActivity().runOnUiThread(
-                    ()->{
-                        if("-2".equals(finalId)){
-                            Toast.makeText(getActivity(),
-                                            "Could not validate due to Internal Server Error, Try Again!",
-                                            Toast.LENGTH_SHORT).show();
-                            enableButtons();
-                            return;
-                        }
-                        else if("-1".equals(finalId)){
-                            Toast.makeText(getActivity(),
-                                    "Invalid Credentials, Try Again!",
-                                    Toast.LENGTH_SHORT).show();
-                            enableButtons();
-                            return;
-                        }
-
-                        // On success, show loading screen
-                        showLoadingScreen();
-
-                        // Navigate To Home Screen
-                        Handler handler = new Handler();
-                        handler.postDelayed(()->navigateToHomePage(finalId), 3000);
-                    }
-            );
         });
     }
 
